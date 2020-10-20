@@ -36,7 +36,7 @@ namespace Modules\Everdio {
                             $input = new \Modules\Image\Webp;
                             break;
                         default:
-                            throw new Event(sprintf("unknown input %s", strtolower($file->Extension)));
+                            throw new \LogicException(sprintf("unknown input %s", strtolower($file->Extension)));
                     }
                     
                     $input->input($file->File);
@@ -69,7 +69,7 @@ namespace Modules\Everdio {
                             $output = new \Modules\Image\Webp;
                             break;
                         default:
-                            throw new Event(sprintf("unknown output for %s", strtolower($file->Extension)));
+                            throw new \LogicException(sprintf("unknown output for %s", strtolower($file->Extension)));
                     }
                     
                     if ($output->export($input, $imagefile, $image->Compression)) {
@@ -79,13 +79,13 @@ namespace Modules\Everdio {
                         
                         return (string) sprintf("%s (%sx%s %s)", $this->Source, $image->Width, $image->Height, $this->formatsize($imagefile->getSize())); 
                     } else {
-                        throw new Event(sprintf("export failed %s", $file->File));
+                        throw new \LogicException(sprintf("export failed %s", $file->File));
                     }
                 } else {
-                    throw new Event(sprintf("invalid input %s: %s", $file->File, $this->dehydrate($image->Input)));
+                    throw new \LogicException(sprintf("invalid input %s: %s", $file->File, $this->dehydrate($image->Input)));
                 }
             } else {
-                throw new Event(sprintf("invalid file %s", $file->File));
+                throw new \LogicException(sprintf("invalid file %s", $file->File));
             }
         }
         

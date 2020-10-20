@@ -11,7 +11,7 @@ namespace Modules\Everdio {
                 $this->Size = $file->getSize();
                 parent::save();           
             } catch (Exception $ex) {
-                throw new Event("file doesn't exist");
+                throw new \LogicException("file doesn't exist");
             }
         }
         
