@@ -9,7 +9,9 @@ namespace Modules\Everdio {
                 $document->DocumentSlug = $this->slug($this->Document);
                 $results = $document->findAll();
                 $this->DocumentSlug = (sizeof($results) ? sprintf("%s-%s", $this->slug($this->Document), sizeof($results) + 1) : $this->slug($this->Document));
-            } else {
+            }
+            
+            if (!isset($this->DocumentSlug)) {
                 $this->DocumentSlug = $this->slug($this->Document);
             }
             

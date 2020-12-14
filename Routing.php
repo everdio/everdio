@@ -34,15 +34,15 @@ namespace Modules\Everdio {
                 $document->find();
                 
                 if ($document->ParentId !== 0) {                
-                    $routing = new ECms\Routing;
-                    $routing->LocaleId = $this->LocaleId;
-                    $routing->EnvironmentId = $this->EnvironmentId;
-                    $routing->DocumentId = $document->ParentId;
-                    unset ($routing->Status);
-                    unset ($routing->Display);                
-                    $routing->find();
-                    if (isset($routing->Routing)) {
-                        $this->Routing = $environment_locale->WebPath . basename($routing->Routing, $environment->Extension) . DIRECTORY_SEPARATOR . $this->slug($document->Document) . $environment->Extension;                    
+                    $parent = new ECms\Routing;
+                    $parent->LocaleId = $this->LocaleId;
+                    $parent->EnvironmentId = $this->EnvironmentId;
+                    $parent->DocumentId = $document->ParentId;
+                    unset ($parent->Status);
+                    unset ($parent->Display);                
+                    $parent->find();
+                    if (isset($parent->Routing)) {
+                        $this->Routing = $environment_locale->WebPath . basename($parent->Routing, $environment->Extension) . DIRECTORY_SEPARATOR . $this->slug($document->Document) . $environment->Extension;                    
                     } else {
                         $this->Routing = $environment_locale->WebPath . $this->slug($document->Document) . $environment->Extension;
                     }

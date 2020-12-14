@@ -14,78 +14,63 @@ namespace Modules\Everdio {
 
             $file = new File;
             $file->FileId = $this->FileId;
-            $file->find();
+            $file->find();           
             
-            if (isset($file->FileId) && isset($environment->EnvironmentId)) {
-                $path = new \Components\Path($environment->RootPath . DIRECTORY_SEPARATOR . $environment->MainPath . $environment->WwwPath . $image->ImagePath);
-                $imagefile = new \Components\File(sprintf("%s/%s%s.%s", $path->getPath(), $image->Prefix, $this->slug($this->Content), $image->Output), "w");
-                
-                if ($imagefile->isWritable() && in_array(strtolower($file->Extension), $image->Input)) {
-                    switch (strtolower($file->Extension)) {
-                        case "jpg":
-                        case "jpeg":                
-                            $input = new \Modules\Image\Jpeg;
-                            break;
-                        case "png":
-                            $input = new \Modules\Image\Png;
-                            break;
-                        case "gif":
-                            $input = new \Modules\Image\Gif;
-                            break;
-                        case "webp":
-                            $input = new \Modules\Image\Webp;
-                            break;
-                        default:
-                            throw new \LogicException(sprintf("unknown input %s", strtolower($file->Extension)));
-                    }
-                    
-                    $input->input($file->File);
-
-                    if (isset($this->Rotate)) {
-                        $input->rotate($this->Rotate);
-                    }
-
-                    $input->resize((in_array("width", $image->Resample) ? $image->Width : false), (in_array("height", $image->Resample) ? $image->Height : false));
-
-                    if ($image->Scale) {
-                        $input->scale($image->Scale);
-                    }
-                    if ($image->Width && $image->Height) {
-                        $input->crop($image->Width, $image->Height, $this->Top, $this->Left);
-                    }
-                    
-                    switch ($image->Output) {
-                        case "jpg":
-                        case "jpeg":                
-                            $output = new \Modules\Image\Jpeg;
-                            break;
-                        case "png":
-                            $output = new \Modules\Image\Png;
-                            break;
-                        case "gif":
-                            $output = new \Modules\Image\Gif;
-                            break;
-                        case "webp":
-                            $output = new \Modules\Image\Webp;
-                            break;
-                        default:
-                            throw new \LogicException(sprintf("unknown output for %s", strtolower($file->Extension)));
-                    }
-                    
-                    if ($output->export($input, $imagefile, $image->Compression)) {
-                        $this->Source = $environment->Scheme . $environment->Host . $image->ImagePath . DIRECTORY_SEPARATOR . $imagefile->getBasename();
-                        $this->Content = $this->sanitize($this->Content);
-                        $this->save();
-                        
-                        return (string) sprintf("%s (%sx%s %s)", $this->Source, $image->Width, $image->Height, $this->formatsize($imagefile->getSize())); 
-                    } else {
-                        throw new \LogicException(sprintf("export failed %s", $file->File));
-                    }
-                } else {
-                    throw new \LogicException(sprintf("invalid input %s: %s", $file->File, $this->dehydrate($image->Input)));
-                }
+            if (in_array(strtolower($file->Extension), \Modules\Image\Jpeg::IMAGE_EXTENSION)) {
+                $input = new \Modules\Image\Jpeg;
+            } elseif (in_array(strtolower($file->Extension), \Modules\Image\Png::IMAGE_EXTENSION)) {
+                $input = new \Modules\Image\Png;
+            } elseif (in_array(strtolower($file->Extension), \Modules\Image\Gif::IMAGE_EXTENSION)) {
+                $input = new \Modules\Image\Gif;
+            } elseif (\in_array(strtolower($file->Extension), \Modules\Image\Webp::IMAGE_EXTENSION)) {
+                $input = new \Modules\Image\Webp;
             } else {
-                throw new \LogicException(sprintf("invalid file %s", $file->File));
+                throw new \LogicException(sprintf("unknown input extension %s", $file->File));
+            }
+
+            if (in_array(strtolower($image->Output), \Modules\Image\Jpeg::IMAGE_EXTENSION)) {
+                $output = new \Modules\Image\Jpeg;
+            } elseif (in_array(strtolower($image->Output), \Modules\Image\Png::IMAGE_EXTENSION)) {
+                $output = new \Modules\Image\Png;
+            } elseif (in_array(strtolower($image->Output), \Modules\Image\Gif::IMAGE_EXTENSION)) {
+                $output = new \Modules\Image\Gif;
+            } elseif (\in_array(strtolower($image->Output), \Modules\Image\Webp::IMAGE_EXTENSION)) {
+                $output = new \Modules\Image\Webp;
+            } else {
+                throw new \LogicException(sprintf("unknown output extension %s", $file->File));
+            }
+
+            $path = new \Components\Path($environment->RootPath . DIRECTORY_SEPARATOR . $environment->MainPath . $environment->WwwPath . $image->ImagePath);
+            $imagefile = new \Components\File(sprintf("%s/%s%s.%s", $path->getPath(), $image->Prefix, $this->slug($this->Content), $image->Output), "w");
+
+            if ($imagefile->isWritable()) {
+                $input->input($file->File);
+                //rotating image if set
+                if (isset($this->Rotate)) {
+                    $input->rotate($this->Rotate);
+                }
+                //resizing image
+                $input->resize((in_array("width", $image->Resample) ? $image->Width : false), (in_array("height", $image->Resample) ? $image->Height : false));                    
+                //scale image if set
+                if ($image->Scale) {
+                    $input->scale($image->Scale);
+                }
+                //crop image if set
+                if ($image->Width && $image->Height) {
+                    $input->crop($image->Width, $image->Height, $this->Top, $this->Left);
+                }
+                //create image based on $output
+                if ($output->export($input, $imagefile, $image->Compression)) {                        
+                    $this->Source = $environment->Scheme . $environment->Host . $image->ImagePath . DIRECTORY_SEPARATOR . $imagefile->getBasename();
+                    $this->Content = $this->sanitize($this->Content);
+                    $this->save();
+                    //done
+                    return (string) sprintf("%s (%sx%s %s)", $this->Source, $image->Width, $image->Height, $this->formatsize($imagefile->getSize())); 
+                } else {
+                    throw new \LogicException(sprintf("export failed %s", $file->File));
+                }                    
+            } else {
+                throw new \LogicException(sprintf("invalid file permission %s", $path->getPath()));
             }
         }
         
