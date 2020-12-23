@@ -42,23 +42,23 @@ namespace Modules\Everdio {
                     unset ($parent->Display);                
                     $parent->find();
                     if (isset($parent->Routing)) {
-                        $this->Routing = $environment_locale->WebPath . basename($parent->Routing, $environment->Extension) . DIRECTORY_SEPARATOR . $this->slug($document->Document) . $environment->Extension;                    
+                        $this->Routing = $environment_locale->Path . basename($parent->Routing, $environment->Extension) . DIRECTORY_SEPARATOR . $this->slug($document->Document) . $environment->Extension;                    
                     } else {
-                        $this->Routing = $environment_locale->WebPath . $this->slug($document->Document) . $environment->Extension;
+                        $this->Routing = $environment_locale->Path . $this->slug($document->Document) . $environment->Extension;
                     }
                 } else {
-                    $this->Routing = $environment_locale->WebPath . $this->slug($document->Document) . $environment->Extension;
+                    $this->Routing = $environment_locale->Path . $this->slug($document->Document) . $environment->Extension;
                 }
             }
             
             if ($routing && $routing !== $this->Routing) {
                 $redirect = new ECms\Redirect;
-                $redirect->Redirect = $environment->Scheme . $environment->Host . DIRECTORY_SEPARATOR . $environment_locale->WebPath . $routing;
-                $redirect->Routing = $environment->Scheme . $environment->Host . DIRECTORY_SEPARATOR . $environment_locale->WebPath . $this->Routing;
+                $redirect->Redirect = $environment->Scheme . $environment->Host . DIRECTORY_SEPARATOR . $environment_locale->Path . $routing;
+                $redirect->Routing = $environment->Scheme . $environment->Host . DIRECTORY_SEPARATOR . $environment_locale->Path . $this->Routing;
                 $redirect->Status = 302;
                 $redirect->save();
                 $redirect->reset($redirect->mapping);
-                $redirect->Redirect = $environment->Scheme . $environment->Host . DIRECTORY_SEPARATOR . $environment_locale->WebPath . $this->Routing;
+                $redirect->Redirect = $environment->Scheme . $environment->Host . DIRECTORY_SEPARATOR . $environment_locale->Path . $this->Routing;
                 $redirect->delete();
             }            
     
