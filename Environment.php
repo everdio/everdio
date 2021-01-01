@@ -4,6 +4,7 @@ namespace Modules\Everdio {
         public function __construct(string $host) {
             parent::__construct();            
             unset ($this->Extension);
+            unset ($this->Scheme);
             $this->Host = $host;
             $this->Status = "active";
             $this->find();

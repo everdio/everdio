@@ -12,16 +12,18 @@ namespace Modules\Everdio {
         }
         
         public function display(string $path) : string {
+            
             //fetching settings from db based on current host
             $environment = new Environment($this->host);
             if (!isset($this->arguments)) {
                 $this->arguments = explode(DIRECTORY_SEPARATOR, $environment->Arguments);
             }
+            
             //redirecting based on scheme http -> https based on settings
             $environment->scheme($this->scheme, implode(DIRECTORY_SEPARATOR, $this->arguments));            
             //redicted based on url if required
-            $environment->redirect($this->arguments);
             
+            $environment->redirect($this->arguments);
             //saving environment data to use later
             $this->environment = $environment->export($environment->mapping);
             
@@ -32,11 +34,11 @@ namespace Modules\Everdio {
             $locale = new ECms\Locale(["LocaleId" => $locale_environment->LocaleId]);
             $locale->find();
             
+            setlocale(LC_ALL, $locale->Locale);            
+            
             //saving locale data to use later
-            $this->locale = $locale->export($locale->mapping);
-            
-            setlocale(LC_ALL, $locale->Locale);
-            
+            $this->locale = $locale->export($locale->mapping);            
+
             //executing possible template based on url, 404 if not found and 500 if an error is thrown, othwerise good to go
             try {
                 $document = new Documents($environment, implode(DIRECTORY_SEPARATOR, $this->arguments));
@@ -57,7 +59,7 @@ namespace Modules\Everdio {
             }
             
             //displaying one of the 3 above, error, not found or a page
-            return (string) $document->display($this->execute($path . DIRECTORY_SEPARATOR . $document->Route));              
+            return (string) $document->display($this->execute($path . DIRECTORY_SEPARATOR . $document->Route));
         }
     }
 }

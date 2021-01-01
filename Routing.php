@@ -52,6 +52,7 @@ namespace Modules\Everdio {
             }
             
             if ($routing && $routing !== $this->Routing) {
+                
                 $redirect = new ECms\Redirect;
                 $redirect->Redirect = $environment->Scheme . $environment->Host . DIRECTORY_SEPARATOR . $environment_locale->Path . $routing;
                 $redirect->Routing = $environment->Scheme . $environment->Host . DIRECTORY_SEPARATOR . $environment_locale->Path . $this->Routing;
