@@ -1,9 +1,9 @@
 <?php
 namespace Modules\Everdio {
     class Group extends \Modules\Everdio\Library\ECms\Group {
-        public function save() {
+        public function save() : \Components\Core\Adapter\Mapper {
             $this->GroupSlug = $this->slug($this->Group);
-            parent::save();
+            return (object) parent::save();
         }
     }
 }

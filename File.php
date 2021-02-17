@@ -2,17 +2,27 @@
 namespace Modules\Everdio {
     use \Modules\Everdio\Library\ECms;
     class File extends ECms\File {
-        public function save() {
+        public function save() : \Components\Core\Adapter\Mapper {
             try {
                 $file = new \Components\File($this->File, "r");
                 $this->Size = $file->getSize();
                 $this->Basename = $file->getBasename("." . $file->getExtension());
                 $this->Extension = $file->getExtension();        
                 $this->Size = $file->getSize();
-                parent::save();           
+                return (object) parent::save();           
             } catch (Exception $ex) {
-                throw new \LogicException("file doesn't exist");
+                throw new \LogicException(sprintf("file does not exist %s", $ex->getMessage));
             }
+        }
+        
+        public function fetch(string $url) {
+            $curl = new \Components\Core\Caller\Curl;
+            $curl->setopt_array([CURLOPT_FOLLOWLOCATION => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_URL => $url]);
+
+            $response = new \Components\File($this->File, "w");
+            $response->store($curl->execute());          
+            
+            $this->save();
         }
         
         public function update() {
@@ -23,7 +33,6 @@ namespace Modules\Everdio {
                 $this->Extension = $info->getExtension();        
                 $this->Size = $info->getSize();
                 $this->save();            
-                return (bool) true;
             } catch(\Exception $ex) {
                 $imagefile = new ImageFile;
                 $imagefile->reset($imagefile->mapping);
@@ -32,8 +41,6 @@ namespace Modules\Everdio {
                 $imagefile->delete();
                 
                 $this->delete();
-                
-                return (bool) false;
             }            
         }
         

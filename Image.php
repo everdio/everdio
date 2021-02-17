@@ -1,9 +1,9 @@
 <?php
 namespace Modules\Everdio {
     class Image extends \Modules\Everdio\Library\ECms\Image {
-        public function save() {
+        public function save() : \Components\Core\Adapter\Mapper {
             $this->ImageSlug = $this->slug($this->Image);
-            parent::save();
+            return (object) parent::save();
         }
     }
 }

@@ -2,7 +2,7 @@
 namespace Modules\Everdio {
     use \Modules\Everdio\Library\ECms;
     class Documents extends \Modules\Everdio\Library\ECms\Documents {
-        public function __construct(Environment $environment, string $arguments) {
+        public function __construct(Library\ECms\Environment $environment, string $arguments) {
             parent::__construct();
             $this->reset($this->mapping);            
             $this->EnvironmentId = $environment->EnvironmentId;

@@ -1,9 +1,9 @@
 <?php
 namespace Modules\Everdio {
     class Gallery extends \Modules\Everdio\Library\ECms\Gallery {
-        public function save() {
+        public function save() : \Components\Core\Adapter\Mapper {
             $this->GallerySlug = $this->slug($this->Gallery);
-            parent::save();
+            return (object) parent::save();
         }        
         
         public function delete() {

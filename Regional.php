@@ -1,8 +1,8 @@
 <?php
 namespace Modules\Everdio {
-    class Category extends \Modules\Everdio\Library\ECms\Category {
+    class Regional extends \Modules\Everdio\Library\ECms\Regional {
         public function save() : \Components\Core\Adapter\Mapper {
-            $this->CategorySlug = $this->slug($this->Category);
+            $this->RegionalSlug = $this->slug($this->Regional);
             return (object) parent::save();
         }
     }

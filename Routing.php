@@ -2,7 +2,7 @@
 namespace Modules\Everdio {
     use \Modules\Everdio\Library\ECms;
     class Routing extends \Modules\Everdio\Library\ECms\Routing {
-        public function save() {
+        public function save() : \Components\Core\Adapter\Mapper {
             $values = $this->restore($this->mapping);
             
             $this->reset($this->mapping);
@@ -63,7 +63,7 @@ namespace Modules\Everdio {
                 $redirect->delete();
             }            
     
-            parent::save();
+            return (object) parent::save();
         }
     }
 }
